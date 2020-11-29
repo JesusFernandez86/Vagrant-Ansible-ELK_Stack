@@ -1,0 +1,36 @@
+---
+
+# Add Elasticsearch apt key
+- name: Add Elasticsearch apt key
+  apt_key:
+   url:  "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+   state: present
+
+# Add the Elasticsearch apt repo
+- name: Adding Elasticsearch repo
+  apt_repository:
+   repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+   state: present
+
+# Install Filebat 
+- name: Install Filebeat with apt
+  apt:
+   name: filebeat
+   update_cache: yes
+   state: latest
+
+#Filebeat configuration
+- name: Configure Filebeats yml file
+  shell: |
+    filebeat modules enable apache
+    sed -i 's#/var/log#/var/log/apache2#g' /etc/filebeat/filebeat.yml
+    sed -Ei '/^output.elasticsearch:$/,/^.*hosts: \["localhost:9200"\]$/{s/(^.*$)/#\1/}' /etc/filebeat/filebeat.yml 
+    sed -Ei '/(^.*#hosts: \["localhost:5044"\]$)/{s/(^.*#)(.*$)/  \2/g}' /etc/filebeat/filebeat.yml 
+    sed -Ei '/(^#output.logstash:$)/{s/(^.*#)(.*$)/\2/g}' /etc/filebeat/filebeat.yml 
+    sed -i 's/\localhost\b/192.168.33.12/g' /etc/filebeat/filebeat.yml
+
+# Starting filebeat
+- name: Starting Filebat
+  service:
+   name: filebeat
+   state: started

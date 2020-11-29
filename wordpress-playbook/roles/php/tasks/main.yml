@@ -1,0 +1,20 @@
+---
+
+# Instal php
+- name: Install php with apt
+  apt:
+   name: php
+   update_cache: yes
+   state: latest
+
+- name: Install php-mysql  with apt
+  apt:
+   name: php-mysql 
+   update_cache: yes
+   state: latest
+
+- name: Install libapache2-mod-php with apt
+  apt:
+   name: libapache2-mod-php
+   update_cache: yes
+   state: latest

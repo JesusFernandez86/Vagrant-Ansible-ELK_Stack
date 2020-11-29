@@ -1,0 +1,43 @@
+---
+#
+# Installing Apache
+#
+
+# Install Apache 
+- name: Install Apache with apt
+  apt:
+   name: apache2
+   update_cache: yes
+   state: latest
+
+# Configurations
+- name: Updating the config file to allow outside access
+  copy:
+   dest: "/etc/apache2/sites-available/wordpress.conf"
+   content: |
+      Alias /blog /usr/share/wordpress
+      <Directory /usr/share/wordpress>
+          Options FollowSymLinks
+          AllowOverride Limit Options FileInfo
+          DirectoryIndex index.php
+          Order allow,deny
+          Allow from all
+      </Directory>
+      <Directory /usr/share/wordpress/wp-content>
+          Options FollowSymLinks
+          Order allow,deny
+          Allow from all
+      </Directory>
+
+# Enable rewrite module for apache
+- name: Enable rewrite module
+  apache2_module:
+    name: rewrite
+    state: present
+    ignore_configcheck: True
+
+# Starting Apache
+- name: Starting Apache
+  service:
+   name: apache2
+   state: started

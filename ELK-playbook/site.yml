@@ -1,0 +1,15 @@
+---
+#
+# Playbook to install the ELK stack 
+#
+
+- name: Install ELK stack on elastik machine
+  hosts: elastik
+  remote_user: vagrant
+  become: true
+  roles:
+  - { role: java }
+  - { role: elasticsearch }
+  - { role: logstash }
+  - { role: kibana }
+

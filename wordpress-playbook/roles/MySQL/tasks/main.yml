@@ -1,0 +1,23 @@
+---
+
+# Install Filebat 
+- name: Install MySQL with apt
+  apt:
+   name: mysql-server
+   update_cache: yes
+   state: latest
+
+# Starting MySQL
+- name: Starting MySQL
+  service:
+   name: mysql
+   state: started
+
+# Setup MySQL database
+- name: Configure MySQL DB
+  shell: |
+    mysql -u root -e "CREATE DATABASE IF NOT EXISTS wordpress;"
+    mysql -u root -e "CREATE USER wordpress IDENTIFIED BY 'wordpress';"
+    mysql -u root -e "GRANT ALL ON wordpress.* TO wordpress;"
+    mysql -u root -e "FLUSH PRIVILEGES;"
+

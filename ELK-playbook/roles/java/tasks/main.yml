@@ -1,0 +1,10 @@
+---
+#
+# Installing Java
+#
+
+- name: Install last version openjdk 8 jre
+  apt:    
+    name: openjdk-8-jre
+    state: latest
+    update_cache: yes

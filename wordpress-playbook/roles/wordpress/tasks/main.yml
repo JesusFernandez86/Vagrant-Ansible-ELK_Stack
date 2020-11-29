@@ -1,0 +1,36 @@
+---
+
+# Install Wordpress 
+- name: Install Wordpress with apt
+  apt:
+   name: wordpress
+   update_cache: yes
+   state: latest
+
+# Enable a2ensite setup
+- name: Configure MySQL DB
+  shell:
+    a2ensite wordpress
+
+# Restart apache
+- name: restart apache2
+  service: 
+    name: apache2 
+    state: restarted
+
+# Configurations
+- name: Configure wordpress to use the DB
+  copy:
+   dest: "/etc/wordpress/config-localhost.php"
+   content: |
+    <?php
+    define('DB_NAME', 'wordpress');
+    define('DB_USER', 'wordpress');
+    define('DB_PASSWORD', 'wordpress');
+    define('DB_HOST', 'localhost');
+    define('DB_COLLATE', 'utf8_general_ci');
+    define('WP_CONTENT_DIR', '/usr/share/wordpress/wp-content');
+    define( 'WP_DEBUG', true );
+    define( 'WP_DEBUG_LOG', true );
+    define( 'SAVEQUERIES', true );
+    ?>

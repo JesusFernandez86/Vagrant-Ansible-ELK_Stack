@@ -1,0 +1,44 @@
+---
+#
+# Installing Logstash
+#
+
+# Install Logstash 
+- name: Install Logstash with apt
+  apt:
+   name: logstash
+   update_cache: yes
+
+# Configurations
+- name: Updating the config file to allow outside access
+  copy:
+   dest: "/etc/logstash/conf.d/apache_logs.conf"
+   content: |
+      input {
+        beats {
+          port => 5044 
+        }
+      }
+
+      filter{
+        grok {
+          match => {"message" => "%{COMBINEDAPACHELOG}"}
+        }
+        geoip {
+          source => "clientip"
+        }
+      }
+
+      output {
+        elasticsearch {
+          hosts => ["localhost:9200"]
+            manage_template => false
+            index => "logstash-%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+        }
+      }
+    
+# Starting logstash
+- name: Starting Logstash
+  service:
+   name: logstash
+   state: started
